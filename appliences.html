@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Household Appliances</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+    }
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #ffffff;
+    }
+    tr:hover {
+      background-color: #ffffff;
+    }
+    #addApplianceBtn {
+      background-color: rgb(217, 111, 111);
+      color: rgb(21, 3, 3);
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    #addApplianceBtn:hover {
+      background-color: transparent;
+    }
+    
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Your Household Appliances</h1>
+    <table class="appliances-table" id="appliancesTable">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Appliance</th>
+          <th>Hours of Usage</th>
+          <th>Power Used (kWh)</th>
+          
+          <th>Cost (ZAR)</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Example table rows with sample data -->
+        <tr>
+          <td>1</td>
+          <td>Refrigerator</td>
+          <td>8</td>
+          <td>3.5</td>
+          
+          <td>ZAR 26.25</td>
+          <td>Active</td>
+          <td>
+            <button>Edit</button>
+            <button>Delete</button>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Washing Machine</td>
+          <td>5</td>
+          <td>2.2</td>
+         
+          <td>ZAR 16.50</td>
+          <td>Inactive</td>
+          <td>
+            <button>Edit</button>
+            <button>Delete</button>
+          </td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Air Conditioner</td>
+          <td>6</td>
+          <td>4.0</td>
+          
+          <td>ZAR 30.00</td>
+          <td>Inactive</td>
+          <td>
+            <button>Edit</button>
+            <button>Delete</button>
+          </td>
+        </tr>
+        <!-- Add more rows with data as needed -->
+      </tbody>
+    </table>
+    <button id="addApplianceBtn">Add Appliance</button>
+  </div>
+
+  <!-- ... (rest of the HTML code) ... -->
+
+<script>
+
+
+  // JavaScript code to sort the table rows by cost in descending order
+  const sortTableByCost = () => {
+      const tableBody = appliancesTable.querySelector("tbody");
+      const rows = Array.from(tableBody.querySelectorAll("tr"));
+      rows.sort((a, b) => parseFloat(b.cells[4].innerText.slice(4)) - parseFloat(a.cells[4].innerText.slice(4)));
+      rows.forEach(row => tableBody.appendChild(row));
+    };
+ 
+  const convertToZAR = (usdCost) => {
+      const exchangeRate = 15; // Replace this with the latest exchange rate from an API
+      return (usdCost * exchangeRate).toFixed(2);
+    };
+
+    // Function to calculate the cost in ZAR based on the appliance's power usage (in kWh)
+    const calculateCostInZAR = (powerUsedUSD) => {
+      // Replace these fictional rates with the actual rates from your electricity provider
+      const fixedDailyFeeUSD = 0.50;
+      const variableRateUSD = 0.12; // Per kWh
+
+      // Assuming powerUsedUSD is in kilowatt-hours (kWh)
+      const totalCostUSD = fixedDailyFeeUSD + powerUsedUSD * variableRateUSD;
+
+      return convertToZAR(totalCostUSD);
+    };
+    let applianceCount = 4; // Initialize the applianceCount variable
+
+
+    // Function to add a new row to the table
+    const addTableRow = (applianceName, hoursUsed, powerUsedUSD, status) => {
+      const powerUsedZAR = convertToZAR(powerUsedUSD);
+      const totalCostZAR = calculateCostInZAR(powerUsedUSD);
+
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+        <td>${applianceCount}</td>
+        <td>${applianceName}</td>
+        <td>${hoursUsed}</td>
+        <td>${powerUsedUSD.toFixed(1)}</td>
+        <td>ZAR ${totalCostZAR}</td>
+        <td>${status}</td>
+        <td>
+          <button>Edit</button>
+          <button>Delete</button>
+        </td>
+      `;
+      appliancesTable.querySelector("tbody").appendChild(newRow);
+      applianceCount++;
+    };
+
+    // Function to handle form submission when adding a new appliance
+    const handleFormSubmit = (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const applianceName = form.applianceName.value;
+      const hoursUsed = parseFloat(form.hoursUsed.value);
+      const powerUsedUSD = parseFloat(form.powerUsed.value);
+      const status = "Active"; // You can set the status dynamically based on your logic
+      addTableRow(applianceName, hoursUsed, powerUsedUSD, status);
+      form.reset();
+      closeModal();
+      sortTableByCost();
+    };
+
+    // Function to create and show the add appliance form
+    const showAddApplianceForm = () => {
+      const formContainer = document.createElement("div");
+      formContainer.innerHTML = `
+        <form id="addApplianceForm">
+          <label for="applianceName">Appliance Name:</label>
+          <input type="text" id="applianceName" required>
+          <label for="hoursUsed">Hours of Usage:</label>
+          <input type="number" id="hoursUsed" required>
+          <label for="powerUsed">Power Used (kWh):</label>
+          <input type="number" step="0.1" id="powerUsed" required>
+          <button type="submit">Add</button>
+          <button type="button" onclick="closeModal()">Cancel</button>
+        </form>
+      `;
+      formContainer.classList.add("modal");
+      document.body.appendChild(formContainer);
+      const addApplianceForm = document.getElementById("addApplianceForm");
+      addApplianceForm.addEventListener("submit", handleFormSubmit);
+    };
+
+    // Function to close the add appliance form modal
+    const closeModal = () => {
+      const modal = document.querySelector(".modal");
+      if (modal) {
+        modal.remove();
+      }
+    };
+
+    const addAppliance = () => {
+      showAddApplianceForm();
+    const addApplianceForm = document.getElementById("addApplianceForm");
+      addApplianceForm.addEventListener("submit", handleFormSubmit);
+        sortTableByCost(); // Re-sort the table after adding a new appliance
+      };
+    // Event listener for the "Add Appliance" button
+    const addApplianceBtn = document.getElementById("addApplianceBtn");
+    addApplianceBtn.addEventListener("click", addAppliance);
+    sortTableByCost();
+  </script>
+
+</body>
+</html>
