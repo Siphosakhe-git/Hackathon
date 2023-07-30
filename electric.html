@@ -148,8 +148,10 @@
       </div>
       
 
-      <h1> Your household is using: </h1>
+      
     </section>
+    <h1> Your household is currently consuming 12.2kW/h costing a total of R434.15  <br>
+      By applying our advanced power saving method, you could save 45% (R195.37) monthly.</h1>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -227,6 +229,7 @@
     form.reset();
     closeModal();
     sortTableByCost();
+    flagRowsWithHoursGreaterThanSix();
   };
 
   // Function to create and show the add appliance form
@@ -257,12 +260,28 @@
           modal.remove();
         }
       };
+
+      const flagRowsWithHoursGreaterThanSix = () => {
+      const rows = document.querySelectorAll("tbody tr");
+      rows.forEach((row) => {
+        const hoursUsed = parseFloat(row.cells[2].innerText);
+        if (hoursUsed > 6) {
+          row.classList.add("flagged-row");
+          row.querySelector(".red-dot").style.display = "inline-block"; // Show the red dot
+        } else {
+          row.classList.remove("flagged-row");
+          row.querySelector(".red-dot").style.display = "none"; // Hide the red dot
+        }
+      });
+    };
+
   
       const addAppliance = () => {
         showAddApplianceForm();
       const addApplianceForm = document.getElementById("addApplianceForm");
         addApplianceForm.addEventListener("submit", handleFormSubmit);
           sortTableByCost(); // Re-sort the table after adding a new appliance
+          flagRowsWithHoursGreaterThanSix()
         };
       // Event listener for the "Add Appliance" button
       const addApplianceBtn = document.getElementById("addApplianceBtn");
@@ -283,6 +302,7 @@
 
     return totalCost;
   };
+
 
 
   const handleEditButtonClick = (event) => {
