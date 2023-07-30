@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title> electric </title>
+  <link href="electric-styles.css" rel="stylesheet">
+</head>
+
+<!-- This is the landing page -->
+<body>
+
+    <h1> Fellow South Africans,</h1>
+
+     
+<br>
+        <p>We've found the light at the end of the tunnel, and it shines brigthly upon a load shedding-free future! </p> <br>
+        
+        <h3> It's time for more power in your hands and more money in your bag.</h3>
+
+
+    
+    <section id>
+    
+    <div class="form-box">
+
+      <div class="form-value">
+
+        <form>
+
+          <h2>Login</h2>
+
+          <div class="inputbox">
+
+            <ion-icon name="pencil-outline"></ion-icon>
+
+            <input type="text" required>
+
+            <label>Name</label>
+
+          </div>
+
+          <div class="inputbox">
+
+            <ion-icon name="mail-outline"></ion-icon>
+
+            <input type="email" required>
+
+            <label>Email</label>
+
+          </div>
+
+          <div class="inputbox">
+
+            <ion-icon name="lock-closed-outline"></ion-icon>
+
+            <input type="password" required>
+
+            <label>Password</label>
+
+          </div>
+
+          <div class="forget">
+
+            <label><input type="checkbox">Remember Me</label>
+
+            <a href="#">Forgot Password</a>
+
+          </div>
+
+          <button>Log In</button>
+
+          <div class="register">
+
+            <p>Don't have an account? <a href="#applianceSection">Sign Up</a></p>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+    
+    </section>
+
+    <section id="applianceSection">
+
+      <div>
+        <h1>Your Household Appliances</h1>
+        <table class="appliances-table" id="appliancesTable">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Appliance</th>
+              <th>Hours of Usage</th>
+              <th>Power Used (kWh)</th>
+              <th>Cost (ZAR)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Example table rows with sample data -->
+            <tr>
+              <td>1</td>
+              <td>Geyser</td>
+              <td>8</td>
+              <td>6</td>
+              <td>ZAR 250.27</td>
+              <td>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="slider round"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Washing Machine</td>
+              <td>5</td>
+              <td>2.2</td>
+              <td>ZAR 58.74</td>
+              <td>
+                <label class="toggle-switch">
+                  <input type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Air Conditioner</td>
+              <td>6</td>
+              <td>4.0</td>
+              <td>ZAR 125.14</td>
+              <td>
+                <label class="toggle-switch">
+                  <input type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              </td>
+            </tr>
+            <!-- Add more rows with data as needed -->
+          </tbody>
+        </table>
+        <button id="addApplianceBtn">Add Appliance</button>
+      </div>
+      
+
+      <h1> Your household is using: </h1>
+    </section>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+<script>
+  // JavaScript code to sort the table rows by cost in descending order
+  const sortTableByCost = () => {
+    const tableBody = appliancesTable.querySelector("tbody");
+    const rows = Array.from(tableBody.querySelectorAll("tr"));
+    rows.sort((a, b) => parseFloat(b.cells[4].innerText.slice(4)) - parseFloat(a.cells[4].innerText.slice(4)));
+    rows.forEach(row => tableBody.appendChild(row));
+  };
+
+  const convertToZAR = (usdCost) => {
+        const exchangeRate = 15; // Replace this with the latest exchange rate from an API
+        return (usdCost * exchangeRate).toFixed(2);
+      };
+  
+      // Function to calculate the cost in ZAR based on the appliance's power usage (in kWh)
+      const calculateCostInZAR = (powerUsedUSD) => {
+        // Replace these fictional rates with the actual rates from your electricity provider
+        
+        const variableRateUSD = 0.1738; // Per kWh
+  
+        // Assuming powerUsedUSD is in kilowatt-hours (kWh)
+        const totalCostUSD =  powerUsedUSD * variableRateUSD;
+  
+        const monthlyCost = totalCostUSD * 30;
+        
+        return monthlyCost;
+      };
+
+  let applianceCount = 4;
+
+  const addTableRow = (applianceName, hoursUsed, powerUsedUSD, status) => {
+    const powerUsedZAR = convertToZAR(powerUsedUSD);
+    const totalCostZAR = calculateCostInZAR(powerUsedUSD) * hoursUsed;
+
+    const newRow = document.createElement("tr");
+    newRow.innerHTML = `
+      <td>${applianceCount}</td>
+      <td>${applianceName}</td>
+      <td>${hoursUsed}</td>
+      <td>${powerUsedUSD.toFixed(1)}</td>
+      <td>ZAR ${totalCostZAR.toFixed(2)}</td>
+      <td>
+        <label class="toggle-switch">
+          <input type="checkbox" ${status === "Active" ? "checked" : ""}>
+          <span class="slider round"></span>
+        </label>
+      </td>
+    `;
+    appliancesTable.querySelector("tbody").appendChild(newRow);
+    applianceCount++;
+  };
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const applianceName = form.applianceName.value;
+    const hoursUsed = parseFloat(form.hoursUsed.value);
+    const powerUsedUSD = parseFloat(form.powerUsed.value);
+    const status = "Active"; // You can set the status dynamically based on your logic
+    addTableRow(applianceName, hoursUsed, powerUsedUSD, status);
+    form.reset();
+    closeModal();
+    sortTableByCost();
+  };
+
+  // Function to create and show the add appliance form
+  const showAddApplianceForm = () => {
+        const formContainer = document.createElement("div");
+        formContainer.innerHTML = `
+          <form id="addApplianceForm">
+            <label for="applianceName">Appliance Name:</label>
+            <input type="text" id="applianceName" required>
+            <label for="hoursUsed">Hours of Usage:</label>
+            <input type="number" id="hoursUsed" required>
+            <label for="powerUsed">Power Used (kWh):</label>
+            <input type="number" step="0.1" id="powerUsed" required>
+            <button type="submit">Add</button>
+            <button type="button" onclick="closeModal()">Cancel</button>
+          </form>
+        `;
+        formContainer.classList.add("modal");
+        document.body.appendChild(formContainer);
+        const addApplianceForm = document.getElementById("addApplianceForm");
+        addApplianceForm.addEventListener("submit", handleFormSubmit);
+      };
+  
+      // Function to close the add appliance form modal
+      const closeModal = () => {
+        const modal = document.querySelector(".modal");
+        if (modal) {
+          modal.remove();
+        }
+      };
+  
+      const addAppliance = () => {
+        showAddApplianceForm();
+      const addApplianceForm = document.getElementById("addApplianceForm");
+        addApplianceForm.addEventListener("submit", handleFormSubmit);
+          sortTableByCost(); // Re-sort the table after adding a new appliance
+        };
+      // Event listener for the "Add Appliance" button
+      const addApplianceBtn = document.getElementById("addApplianceBtn");
+      addApplianceBtn.addEventListener("click", addAppliance);
+      sortTableByCost();
+
+
+  const calculateTotalCost = () => {
+    const tableBody = document.getElementById("appliancesTable").querySelector("tbody");
+    const rows = tableBody.querySelectorAll("tr");
+    let totalCost = 0;
+
+    rows.forEach((row) => {
+    const costText = row.cells[4].innerText;
+    const cost = parseFloat(costText.slice(4)); // Remove the "ZAR " prefix and parse the value
+    totalCost += cost;
+    });
+
+    return totalCost;
+  };
+
+
+  const handleEditButtonClick = (event) => {
+    const row = event.target.closest("tr");
+    // Extract data from the row and perform edit operation as needed
+    // For example, you can create an edit form and populate it with the existing data
+    console.log("Edit button clicked for row:", row);
+  };
+
+  const handleDeleteButtonClick = (event) => {
+    const row = event.target.closest("tr");
+    row.remove();
+    sortTableByCost();
+  };
+
+  const setupActionButtons = () => {
+    const editButtons = document.querySelectorAll(".edit-button");
+    const deleteButtons = document.querySelectorAll(".delete-button");
+
+    editButtons.forEach((button) => button.addEventListener("click", handleEditButtonClick));
+    deleteButtons.forEach((button) => button.addEventListener("click", handleDeleteButtonClick));
+  };
+
+  
+</script>
+</body>
+
+
+</html>
+
