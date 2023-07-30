@@ -41,7 +41,94 @@
     #addApplianceBtn:hover {
       background-color: transparent;
     }
-    
+
+    /* Toggle switch styles */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+    .dropdown-menu {
+      display: inline-block;
+      position: relative;
+    }
+
+    .dropdown-menu-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+    }
+
+    .dropdown-menu-content a {
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      color: #000;
+    }
+
+    .dropdown-menu-content a:hover {
+      background-color: #ddd;
+    }
+
+    .show {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -54,10 +141,8 @@
           <th>Appliance</th>
           <th>Hours of Usage</th>
           <th>Power Used (kWh)</th>
-          
           <th>Cost (ZAR)</th>
           <th>Status</th>
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -67,12 +152,12 @@
           <td>Refrigerator</td>
           <td>8</td>
           <td>3.5</td>
-          
           <td>ZAR 26.25</td>
-          <td>Active</td>
           <td>
-            <button>Edit</button>
-            <button>Delete</button>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="slider round"></span>
+            </label>
           </td>
         </tr>
         <tr>
@@ -80,12 +165,12 @@
           <td>Washing Machine</td>
           <td>5</td>
           <td>2.2</td>
-         
           <td>ZAR 16.50</td>
-          <td>Inactive</td>
           <td>
-            <button>Edit</button>
-            <button>Delete</button>
+            <label class="toggle-switch">
+              <input type="checkbox">
+              <span class="slider round"></span>
+            </label>
           </td>
         </tr>
         <tr>
@@ -93,12 +178,12 @@
           <td>Air Conditioner</td>
           <td>6</td>
           <td>4.0</td>
-          
           <td>ZAR 30.00</td>
-          <td>Inactive</td>
           <td>
-            <button>Edit</button>
-            <button>Delete</button>
+            <label class="toggle-switch">
+              <input type="checkbox">
+              <span class="slider round"></span>
+            </label>
           </td>
         </tr>
         <!-- Add more rows with data as needed -->
@@ -107,39 +192,29 @@
     <button id="addApplianceBtn">Add Appliance</button>
   </div>
 
-  <!-- ... (rest of the HTML code) ... -->
-
-<script>
-
-
-  // JavaScript code to sort the table rows by cost in descending order
-  const sortTableByCost = () => {
+  <script>
+    // JavaScript code to sort the table rows by cost in descending order
+    const sortTableByCost = () => {
       const tableBody = appliancesTable.querySelector("tbody");
       const rows = Array.from(tableBody.querySelectorAll("tr"));
       rows.sort((a, b) => parseFloat(b.cells[4].innerText.slice(4)) - parseFloat(a.cells[4].innerText.slice(4)));
       rows.forEach(row => tableBody.appendChild(row));
     };
- 
-  const convertToZAR = (usdCost) => {
+
+    const convertToZAR = (usdCost) => {
       const exchangeRate = 15; // Replace this with the latest exchange rate from an API
       return (usdCost * exchangeRate).toFixed(2);
     };
 
-    // Function to calculate the cost in ZAR based on the appliance's power usage (in kWh)
     const calculateCostInZAR = (powerUsedUSD) => {
-      // Replace these fictional rates with the actual rates from your electricity provider
       const fixedDailyFeeUSD = 0.50;
       const variableRateUSD = 0.12; // Per kWh
-
-      // Assuming powerUsedUSD is in kilowatt-hours (kWh)
       const totalCostUSD = fixedDailyFeeUSD + powerUsedUSD * variableRateUSD;
-
       return convertToZAR(totalCostUSD);
     };
-    let applianceCount = 4; // Initialize the applianceCount variable
 
+    let applianceCount = 4;
 
-    // Function to add a new row to the table
     const addTableRow = (applianceName, hoursUsed, powerUsedUSD, status) => {
       const powerUsedZAR = convertToZAR(powerUsedUSD);
       const totalCostZAR = calculateCostInZAR(powerUsedUSD);
@@ -151,17 +226,17 @@
         <td>${hoursUsed}</td>
         <td>${powerUsedUSD.toFixed(1)}</td>
         <td>ZAR ${totalCostZAR}</td>
-        <td>${status}</td>
         <td>
-          <button>Edit</button>
-          <button>Delete</button>
+          <label class="toggle-switch">
+            <input type="checkbox" ${status === "Active" ? "checked" : ""}>
+            <span class="slider round"></span>
+          </label>
         </td>
       `;
       appliancesTable.querySelector("tbody").appendChild(newRow);
       applianceCount++;
     };
 
-    // Function to handle form submission when adding a new appliance
     const handleFormSubmit = (event) => {
       event.preventDefault();
       const form = event.target;
@@ -175,13 +250,19 @@
       sortTableByCost();
     };
 
-    // Function to create and show the add appliance form
     const showAddApplianceForm = () => {
       const formContainer = document.createElement("div");
       formContainer.innerHTML = `
         <form id="addApplianceForm">
-          <label for="applianceName">Appliance Name:</label>
-          <input type="text" id="applianceName" required>
+          <label for="dropdown">Applience:</label>
+  <select id="dropdown">
+    <option value="Option 1">Kettle</option>
+    <option value="Option 2">Light Bulb</option>
+    <option value="Option 3">Heater</option>
+    <option value="Option 4">TV</option>
+    <option value="Option 5">Microwave</option>
+    <!-- Add more options as needed -->
+  </select>
           <label for="hoursUsed">Hours of Usage:</label>
           <input type="number" id="hoursUsed" required>
           <label for="powerUsed">Power Used (kWh):</label>
@@ -196,7 +277,6 @@
       addApplianceForm.addEventListener("submit", handleFormSubmit);
     };
 
-    // Function to close the add appliance form modal
     const closeModal = () => {
       const modal = document.querySelector(".modal");
       if (modal) {
@@ -204,17 +284,38 @@
       }
     };
 
+    const handleEditButtonClick = (event) => {
+      const row = event.target.closest("tr");
+      // Extract data from the row and perform edit operation as needed
+      // For example, you can create an edit form and populate it with the existing data
+      console.log("Edit button clicked for row:", row);
+    };
+
+    const handleDeleteButtonClick = (event) => {
+      const row = event.target.closest("tr");
+      row.remove();
+      sortTableByCost();
+    };
+
+    const setupActionButtons = () => {
+      const editButtons = document.querySelectorAll(".edit-button");
+      const deleteButtons = document.querySelectorAll(".delete-button");
+
+      editButtons.forEach((button) => button.addEventListener("click", handleEditButtonClick));
+      deleteButtons.forEach((button) => button.addEventListener("click", handleDeleteButtonClick));
+    };
+
     const addAppliance = () => {
       showAddApplianceForm();
-    const addApplianceForm = document.getElementById("addApplianceForm");
+      const addApplianceForm = document.getElementById("addApplianceForm");
       addApplianceForm.addEventListener("submit", handleFormSubmit);
-        sortTableByCost(); // Re-sort the table after adding a new appliance
-      };
-    // Event listener for the "Add Appliance" button
+      sortTableByCost();
+      setupActionButtons();
+    };
+
     const addApplianceBtn = document.getElementById("addApplianceBtn");
     addApplianceBtn.addEventListener("click", addAppliance);
     sortTableByCost();
   </script>
-
 </body>
 </html>
